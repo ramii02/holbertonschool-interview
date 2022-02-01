@@ -20,3 +20,4 @@ def minOperations(n):
         my_str = my_str + copy
         iterations += 1
     return iterations
+    
