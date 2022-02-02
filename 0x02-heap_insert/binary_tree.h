@@ -1,8 +1,10 @@
-#ifndef _BINARY_TREES_H_
-#define _BINARY_TREES_H_
+#ifndef BINARY_TREES_H
+#define BINARY_TREES_H
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
 
 /**
  * struct binary_tree_s - Binary tree node
@@ -20,29 +22,14 @@ struct binary_tree_s
 	struct binary_tree_s *right;
 };
 
-typedef struct binary_tree_s heap_t;
 typedef struct binary_tree_s binary_tree_t;
+typedef struct binary_tree_s heap_t;
 
-/**
- * struct empty_space_s - Struct to find the empty space
- *
- * @deep: Deep of the node
- * @node: Node to find place
- */
-struct empty_space_s
-{
-	int deep;
-	heap_t *node;
-};
-
-typedef struct empty_space_s empty_space_t;
-
-void binary_tree_print(const binary_tree_t *);
-binary_tree_t *binary_tree_node(binary_tree_t *parent, int value);
+/* ================================== */
+/*              PROTOTYPE             */
+/* ================================== */
+void binary_tree_print(const binary_tree_t *tree);
 heap_t *heap_insert(heap_t **root, int value);
+binary_tree_t *binary_tree_node(binary_tree_t *parent, int value);
 
-heap_t *free_space(heap_t *parent);
-heap_t *swap_nodes(heap_t *node);
-empty_space_t find_space(heap_t *node);
-
-#endif /* _BINARY_TREES_H_ */
+#endif /* BINARY_TREES_H */
