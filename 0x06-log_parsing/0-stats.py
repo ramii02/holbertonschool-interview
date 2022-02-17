@@ -1,38 +1,39 @@
 #!/usr/bin/python3
-"""stats module
-"""
-from sys import stdin
-
-
-codes = {'200': 0, '301': 0, '400': 0, '401': 0,
-         '403': 0, '404': 0, '405': 0, '500': 0}
-size = 0
-
-
-def print_info():
-    """print_info method print needed info
-    Args:
-        codes (dict): code status
-        size (int): size of files
-    """
-    print("File size: {}".format(size))
-    for key, val in sorted(codes.items()):
-        if val > 0:
-            print("{}: {}".format(key, val))
+''' Module that reads stdin line by line and computes metrics '''
 
 if __name__ == '__main__':
+    import sys
+
+    file_size, count = 0, 0
+    codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+
+    def print_codes(codes, file_size):
+        ''' Print all status codes generated so far '''
+        print("File size: {}".format(file_size))
+        for k in sorted(codes.keys()):
+            if codes[k]:
+                print("{}: {}".format(k, codes[k]))
     try:
-        for i, line in enumerate(stdin, 1):
+        for line in sys.stdin:
             try:
-                info = line.split()
-                size += int(info[-1])
-                if info[-2] in codes.keys():
-                    codes[info[-2]] += 1
-            except:
+                data = line.split()
+                status_code = int(data[-2])
+
+                if status_code in codes:
+                    codes[status_code] += 1
+            except BaseException:
                 pass
-            if not i % 10:
-                print_info()
+            try:
+                file_size += int(data[-1])
+            except BaseException:
+                pass
+
+            count += 1
+            if count % 10 == 0:
+                print_codes(codes, file_size)
+
     except KeyboardInterrupt:
-        print_info()
+        print_codes(codes, file_size)
         raise
-    print_info()
+
+    print_codes(codes, file_size)
