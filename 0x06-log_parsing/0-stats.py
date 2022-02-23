@@ -1,39 +1,41 @@
 #!/usr/bin/python3
-''' Module that reads stdin line by line and computes metrics '''
+""" Script that reads stdin line by line and computes metrics."""
 
-if __name__ == '__main__':
-    import sys
+import sys
 
-    file_size, count = 0, 0
-    codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+dlist = {"size": 0,
+         "lines": 1}
 
-    def print_codes(codes, file_size):
-        ''' Print all status codes generated so far '''
-        print("File size: {}".format(file_size))
-        for k in sorted(codes.keys()):
-            if codes[k]:
-                print("{}: {}".format(k, codes[k]))
+errors = {"200": 0, "301": 0, "400": 0, "401": 0,
+          "403": 0, "404": 0, "405": 0, "500": 0}
+
+
+def printf():
+    """ Print codes and numbers"""
+    print("File size: {}".format(dlist["size"]))
+    for key in sorted(errors.keys()):
+        if errors[key] != 0:
+            print("{}: {}".format(key, errors[key]))
+
+
+def datasize(data):
+    """ Count file codes and size"""
+    dlist["size"] += int(data[-1])
+    if data[-2] in errors:
+        errors[data[-2]] += 1
+
+
+if __name__ == "__main__":
     try:
         for line in sys.stdin:
             try:
-                data = line.split()
-                status_code = int(data[-2])
-
-                if status_code in codes:
-                    codes[status_code] += 1
-            except BaseException:
+                datasize(line.split(" "))
+            except:
                 pass
-            try:
-                file_size += int(data[-1])
-            except BaseException:
-                pass
-
-            count += 1
-            if count % 10 == 0:
-                print_codes(codes, file_size)
-
+            if dlist["lines"] % 10 == 0:
+                printf()
+            dlist["lines"] += 1
     except KeyboardInterrupt:
-        print_codes(codes, file_size)
+        printf()
         raise
-
-    print_codes(codes, file_size)
+    printf()
