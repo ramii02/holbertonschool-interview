@@ -1,37 +1,48 @@
 #!/usr/bin/python3
-"""log parsing module"""
+"""
+reads stdin line by line and computes metrics
+"""
 import sys
-import re
+total_file_size = {'size': 0}
+codes = {
+    '200': 0,
+    '301': 0,
+    '400': 0,
+    '401': 0,
+    '403': 0,
+    '404': 0,
+    '405': 0,
+    '500': 0
+}
 
 
-def print_codes(total_size, codes):
-    print("File size: {:d}".format(total_size))
+def print_data():
+    print('File size: {}'.format(total_file_size['size']))
     for key in sorted(codes.keys()):
-        if (codes[key]):
-            print("{:s}: {:d}".format(key, codes[key]))
+        if codes[key] > 0:
+            print('{}: {}'.format(key, codes[key]))
+
+
+def operate_resume(line):
+    try:
+        line = line.split(' ')
+        size = line[-1]
+        total_file_size['size'] += int(size)
+        if line[-2] in codes:
+            codes[line[-2]] += 1
+    except Exception as e:
+        pass
 
 
 if __name__ == '__main__':
-    ptn = re.compile('.+ .+ \d+')
-    total_size = 0
-    codes = {'200': 0, '301': 0,
-             '400': 0, '401': 0,
-             '403': 0, '404': 0,
-             '405': 0, '500': 0}
-
+    num_lines = 1
     try:
-        timeout = 10
         for line in sys.stdin:
-            if (ptn.match(line)):
-                values = line.split('"')[2].split()
-                total_size += int(values[1])
-                if values[0] in codes.keys():
-                    codes[values[0]] += 1
-                timeout -= 1
-                if timeout < 1:
-                    print_codes(total_size, codes)
-                    timeout = 10
-        print_codes(total_size, codes)
+            operate_resume(line)
+            if num_lines % 10 == 0:
+                print_data()
+            num_lines += 1
     except KeyboardInterrupt:
-        print_codes(total_size, codes)
-        sys.exit(0)
+        print_data()
+        raise
+    print_data()
