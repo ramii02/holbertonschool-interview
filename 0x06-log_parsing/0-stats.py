@@ -1,41 +1,58 @@
 #!/usr/bin/python3
-""" Script that reads stdin line by line and computes metrics."""
-
+"""
+parsing function
+"""
 import sys
 
-dlist = {"size": 0,
-         "lines": 1}
 
-errors = {"200": 0, "301": 0, "400": 0, "401": 0,
-          "403": 0, "404": 0, "405": 0, "500": 0}
+counters = {
+    "size": 0,
+    "lines": 1
+}
 
-
-def printf():
-    """ Print codes and numbers"""
-    print("File size: {}".format(dlist["size"]))
-    for key in sorted(errors.keys()):
-        if errors[key] != 0:
-            print("{}: {}".format(key, errors[key]))
+cntCode = {
+    "200": 0, "301": 0, "400": 0, "401": 0,
+    "403": 0, "404": 0, "405": 0, "500": 0
+}
 
 
-def datasize(data):
-    """ Count file codes and size"""
-    dlist["size"] += int(data[-1])
-    if data[-2] in errors:
-        errors[data[-2]] += 1
+def printCodes():
+    """
+    function to print the codes and the number of ocurrence
+    """
+    # print file size
+    print("File size: {}".format(counters["size"]))
+    # print all codes
+    for key in sorted(cntCode.keys()):
+        # if a val is not 0
+        if cntCode[key] != 0:
+            print("{}: {}".format(key, cntCode[key]))
+
+
+def countCodeSize(listData):
+    """
+    count the codes and file size
+    """
+    # count file size
+    counters["size"] += int(listData[-1])
+    # if exists the code
+    if listData[-2] in cntCode:
+        # count status code
+        cntCode[listData[-2]] += 1
+        # line 10 print
 
 
 if __name__ == "__main__":
     try:
         for line in sys.stdin:
             try:
-                datasize(line.split(" "))
+                countCodeSize(line.split(" "))
             except:
                 pass
-            if dlist["lines"] % 10 == 0:
-                printf()
-            dlist["lines"] += 1
+            if counters["lines"] % 10 == 0:
+                printCodes()
+            counters["lines"] += 1
     except KeyboardInterrupt:
-        printf()
+        printCodes()
         raise
-    printf()
+    printCodes()
