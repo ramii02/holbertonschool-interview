@@ -1,58 +1,37 @@
 #!/usr/bin/python3
-"""
-parsing function
-"""
+"""log parsing module"""
 import sys
+import re
 
 
-counters = {
-    "size": 0,
-    "lines": 1
-}
-
-cntCode = {
-    "200": 0, "301": 0, "400": 0, "401": 0,
-    "403": 0, "404": 0, "405": 0, "500": 0
-}
+def print_codes(total_size, codes):
+    print("File size: {:d}".format(total_size))
+    for key in sorted(codes.keys()):
+        if (codes[key]):
+            print("{:s}: {:d}".format(key, codes[key]))
 
 
-def printCodes():
-    """
-    function to print the codes and the number of ocurrence
-    """
-    # print file size
-    print("File size: {}".format(counters["size"]))
-    # print all codes
-    for key in sorted(cntCode.keys()):
-        # if a val is not 0
-        if cntCode[key] != 0:
-            print("{}: {}".format(key, cntCode[key]))
+if __name__ == '__main__':
+    ptn = re.compile('.+ .+ \d+')
+    total_size = 0
+    codes = {'200': 0, '301': 0,
+             '400': 0, '401': 0,
+             '403': 0, '404': 0,
+             '405': 0, '500': 0}
 
-
-def countCodeSize(listData):
-    """
-    count the codes and file size
-    """
-    # count file size
-    counters["size"] += int(listData[-1])
-    # if exists the code
-    if listData[-2] in cntCode:
-        # count status code
-        cntCode[listData[-2]] += 1
-        # line 10 print
-
-
-if __name__ == "__main__":
     try:
+        timeout = 10
         for line in sys.stdin:
-            try:
-                countCodeSize(line.split(" "))
-            except:
-                pass
-            if counters["lines"] % 10 == 0:
-                printCodes()
-            counters["lines"] += 1
+            if (ptn.match(line)):
+                values = line.split('"')[2].split()
+                total_size += int(values[1])
+                if values[0] in codes.keys():
+                    codes[values[0]] += 1
+                timeout -= 1
+                if timeout < 1:
+                    print_codes(total_size, codes)
+                    timeout = 10
+        print_codes(total_size, codes)
     except KeyboardInterrupt:
-        printCodes()
-        raise
-    printCodes()
+        print_codes(total_size, codes)
+        sys.exit(0)
