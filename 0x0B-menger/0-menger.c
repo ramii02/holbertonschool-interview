@@ -1,39 +1,37 @@
 #include "menger.h"
 
 /**
- * menger - draws a 2D menger sponge
- * @level: number of levels to draw
- * Return: nothing
+ * menger - A function that draws a 2D Menger Sponge
+ * @level: is the level of the Menger Sponge to draw
  */
 void menger(int level)
 {
-	int col, row, size;
+	int c, r, size;
 
-	if (level < 0)
-		return;
-	size = pow(3, level);
-	for (col = 0; col < size; col++)
+	if (level >= 0)
 	{
-		for (row = 0; row < size; row++)
-			printf("%c", hash_space(col, row));
-		putchar(10);
+		size = pow(3, level);
+		for (c = 0; c < size; c++)
+		{
+			for (r = 0; r < size; r++)
+				printf("%c", _putchar(c, r));
+			printf("\n");
+		}
 	}
 }
 
-
 /**
- * hash_space - gets a character
- * @col: column
- * @row: row
+ * _putchar - render the character on the sponge
+ * @c: column
+ * @r: row
  * Return: '#' or ' '
  */
-char hash_space(int col, int row)
+char _putchar(int c, int r)
 {
-	while (col && row)
+	for (; c && r; c /= 3, r /= 3)
 	{
-		if (col % 3 == 1 && row % 3 == 1)
+		if (c % 3 == 1 && r % 3 == 1)
 			return (' ');
-		col /= 3, row /= 3;
 	}
 	return ('#');
 }

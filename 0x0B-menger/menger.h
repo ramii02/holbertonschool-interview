@@ -1,10 +1,12 @@
-ifndef MENGER_H_
-#define MENGER_H_
+#ifndef MENGER_H
+#define MENGER_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <math.h>
 
+char _putchar(int c, int r);
 void menger(int level);
-char hash_space(int col, int row);
 
-#endif /* MENGER_H_ */
+#endif
