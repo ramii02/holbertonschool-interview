@@ -1,57 +1,50 @@
+#include <stdlib.h>
 #include "binary_trees.h"
+
 /**
- * sorted_array_to_avl - create binary tree
- * @array: The array to convert
- * @size: Size of the array
- * Return: header
+ * sorted_array_to_avl - AVL tree from an array
+ * @array: array
+ * @size: size
+ * Return:  Pointer to the root node
  */
+
 avl_t *sorted_array_to_avl(int *array, size_t size)
 {
-	avl_t *header = NULL;
+	avl_t *node, *rightNode, *leftNode = NULL;
+	size_t half;
 
-	if (array == NULL)
+	if (size == 0 || !array)
 		return (NULL);
 
-	if (nodes_binary(array, 0, (int)size - 1, &header) == NULL)
-		return (NULL);
-	return (header);
-}
-/**
- * nodes_binary - create binary tree
- * @array: The array to convert
- * @p1: initial position
- * @p2: final position
- * @header: node to create
- * Return: header
- */
-avl_t *nodes_binary(int *array, int p1, int p2, avl_t **header)
-{
-	avl_t *new_node = NULL, *left = NULL, *right = NULL;
-	int middle;
+	node = malloc(sizeof(avl_t));
 
-	if (p1 > p2)
+	if (!node)
 		return (NULL);
 
-	middle = (p2 + p1) / 2;
+	half = (size - 1) / 2;
+	node->n = array[half];
+	node->parent = NULL;
 
-	nodes_binary(array, p1, middle - 1, &left);
-	nodes_binary(array, middle + 1, p2, &right);
+	if (half > 0)
+		leftNode = sorted_array_to_avl(array, half);
 
-	new_node = malloc(sizeof(avl_t));
-	if (new_node == NULL)
-		return (NULL);
+	else
+		leftNode = NULL;
 
-	new_node->n = array[middle];
-	new_node->parent = NULL;
-	new_node->left = left;
-	new_node->right = right;
+	if (size > (half + 1))
+		rightNode = sorted_array_to_avl(&array[half + 1], size - (half + 1));
 
-	if (left != NULL)
-		left->parent = new_node;
+	else
+		rightNode = NULL;
 
-	if (right != NULL)
-		right->parent = new_node;
+	node->left = leftNode;
+	node->right = rightNode;
 
-	*header = new_node;
-	return (new_node);
+	if (node->left)
+		(node->left)->parent = node;
+
+	if (node->right)
+		(node->right)->parent = node;
+
+	return (node);
 }
